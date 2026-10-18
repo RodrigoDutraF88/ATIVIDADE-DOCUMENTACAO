@@ -1,0 +1,26 @@
+name: entrega
+
+# Valida o Pull Request de entrega (branch entrega/seu-nome).
+# Roda as mesmas checagens do verificar.sh das sessões 2, 3 e 4.
+on:
+  pull_request:
+
+jobs:
+  validar:
+    if: ${{ startsWith(github.head_ref, 'entrega/') }}
+    runs-on: ubuntu-latest
+    env:
+      TRILHA_NOME: ${{ github.event.pull_request.user.login }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Sessão 2 (endpoints e erros)
+        run: ./verificar.sh 2
+      - name: Sessão 3 (schemas)
+        run: ./verificar.sh 3
+      - name: Sessão 4 (lint e produção)
+        run: ./verificar.sh 4

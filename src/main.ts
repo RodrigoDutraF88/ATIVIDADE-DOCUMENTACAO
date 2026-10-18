@@ -1,0 +1,16 @@
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+
+  // Sessão 1: configure a documentação aqui, antes do app.listen.
+
+  const porta = Number(process.env.PORT ?? 3000);
+  await app.listen(porta);
+  console.log(`Agenda no ar em http://localhost:${porta}`);
+}
+
+bootstrap();

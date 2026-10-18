@@ -1,0 +1,13 @@
+node_modules
+dist
+*.tsbuildinfo
+
+# gerados durante a trilha (npm run docs:export e Sessão 5)
+openapi.json
+openapi-v1.json
+redoc-static.html
+
+.verificar-nome
+
+.env
+.DS_Store

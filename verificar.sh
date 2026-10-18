@@ -143,12 +143,28 @@ sessao4() {
     if [ "$n" -gt 0 ]; then falha "Spectral encontrou ${n} problema(s) no documento"; dica "rode 'npm run docs:lint' para ver a lista"
     else falha "o Spectral não rodou"; dica "$(grep -v '^$' "$TMP/spectral.log" | tail -1)"; fi
   fi
-  local wf="" f
-  for f in .github/workflows/*.yml .github/workflows/*.yaml; do
-    [ -f "$f" ] && [ "$(basename "$f")" != "entrega.yml" ] && grep -qE 'spectral|docs:lint' "$f" && wf="$f"
-  done
-  if [ -n "$wf" ]; then ok "o lint roda no GitHub Actions ($wf)"
-  else falha "nenhum workflow roda o Spectral"; dica "adicione 'npm run docs:export' e 'npm run docs:lint' ao .github/workflows/ci.yml"; fi
+  # Lê os workflows como YAML de verdade: um passo colado com a indentação errada
+  # contém o texto "docs:lint" mas quebra o arquivo inteiro no GitHub.
+  local wf
+  wf="$(node -e '
+    const fs = require("fs"), yaml = require("js-yaml");
+    const dir = ".github/workflows";
+    const arquivos = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /\.ya?ml$/.test(f) && f !== "entrega.yml") : [];
+    let invalido = "";
+    for (const f of arquivos) {
+      const texto = fs.readFileSync(`${dir}/${f}`, "utf8");
+      let wf;
+      try { wf = yaml.load(texto); } catch (e) { if (/spectral|docs:lint/.test(texto)) invalido = `INVALIDO|${dir}/${f}|${e.reason} (linha ${e.mark.line + 1})`; continue; }
+      const passos = Object.values(wf?.jobs ?? {}).flatMap((j) => j.steps ?? []);
+      if (passos.some((p) => /spectral|docs:lint/.test(p.run ?? ""))) { console.log(`OK|${dir}/${f}`); process.exit(0); }
+    }
+    console.log(invalido);
+  ' 2>/dev/null)"
+  case "$wf" in
+    OK\|*) ok "o lint roda no GitHub Actions (${wf#OK|})";;
+    INVALIDO\|*) wf="${wf#INVALIDO|}"; falha "${wf%%|*} não é um YAML válido: ${wf#*|}"; dica "os passos '- run:' precisam da mesma indentação dos outros passos (6 espaços)";;
+    *) falha "nenhum workflow roda o Spectral"; dica "adicione 'npm run docs:export' e 'npm run docs:lint' como passos do .github/workflows/ci.yml";;
+  esac
   if subir_api production; then
     local api json
     api="$(http_status "http://localhost:$PORTA/api")"; json="$(http_status "http://localhost:$PORTA/api-json")"

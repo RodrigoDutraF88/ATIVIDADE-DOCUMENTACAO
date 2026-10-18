@@ -55,7 +55,9 @@ function sessao3() {
   const nomes = Object.keys(schemas);
   if (nomes.length) ok(`${nomes.length} schemas no documento`);
   else falha('nenhum schema em components.schemas', 'termine a Sessão 2: os tipos nas respostas criam os schemas');
-  checar(nomes.filter((n) => !Object.keys(schemas[n].properties ?? {}).length), 'nenhum schema vazio', 'schemas vazios', 'ative o CLI plugin no nest-cli.json e rode o build de novo');
+  // UpdateEventoDto vazio tem causa própria (o import do PartialType) e checagem própria abaixo.
+  const vazios = nomes.filter((n) => n !== 'UpdateEventoDto' && !Object.keys(schemas[n].properties ?? {}).length);
+  checar(vazios, 'nenhum schema vazio', 'schemas vazios', 'ative o CLI plugin no nest-cli.json e rode o build de novo');
   const vagos = [];
   for (const [n, s] of Object.entries(schemas)) {
     for (const [campo, p] of Object.entries(s.properties ?? {})) {

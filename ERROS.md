@@ -52,6 +52,9 @@ Faltam `.setDescription('...')` e `.addServer('http://localhost:3000')` no `Docu
 **`operation-description`**
 Toda operação precisa de `description`, além do `summary`: `@ApiOperation({ summary: '...', description: '...' })`.
 
+**`.github/workflows/ci.yml não é um YAML válido`**
+Os passos novos foram colados com a indentação errada. Cada `- run:` precisa começar na mesma coluna dos outros passos (6 espaços). Com o YAML quebrado, o GitHub nem roda o workflow.
+
 **O CI falha no `npm ci`**
 O `package-lock.json` ficou desatualizado (instalou algo com `npm install` e não commitou o lock). Rode `npm install`, commite o `package-lock.json` e dê push.
 

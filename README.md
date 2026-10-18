@@ -2,7 +2,7 @@
 
 Este repositório é a **Agenda**, uma API de eventos em NestJS, usada como atividade da trilha de Documentação de API da CJR. O objetivo é aprender a documentar uma API com OpenAPI a partir do próprio código: rotas, respostas, erros, schemas e segurança, com a qualidade travada no CI e a documentação fechada em produção. O código da Agenda já vem pronto e **sem nenhuma anotação de documentação**. Ao longo das sessões você escreve só a documentação.
 
-O conteúdo de cada sessão está no Notion: [Trilha de Documentação de API](https://app.notion.com/p/3f9f0d89941780e081a1ce5a9e0df560)
+O conteúdo de cada sessão está no Notion: [Trilha de Documentação de API](https://app.notion.com/p/3f9f0d89941781c9ad13f6823df5ee40)
 
 ## Pré-requisitos
 

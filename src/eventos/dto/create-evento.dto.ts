@@ -9,10 +9,6 @@ export class CreateEventoDto {
   inicio: string;
 
   @IsOptional()
-  @IsDateString()
-  fim?: string;
-
-  @IsOptional()
   @IsString()
   local?: string;
 }

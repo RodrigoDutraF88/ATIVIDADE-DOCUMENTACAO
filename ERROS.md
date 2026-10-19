@@ -18,8 +18,8 @@ O script compara com o nome que você digitou na primeira vez. Se digitou errado
 **`toda rota tem tag` passou sem eu usar `@ApiTags`**
 Normal. O `@nestjs/swagger` 11 cria a tag a partir do nome do controller (`Eventos`, `Admin`). Use `@ApiTags('eventos')` mesmo assim, para escolher o nome. Ele precisa bater com o `addTag` da Sessão 4.
 
-**`o filtro ?de= de GET /eventos aparece como obrigatório`**
-Todo `@Query('nome')` sai como obrigatório no documento, mesmo com `?` no TypeScript. Use `@ApiQuery({ name: 'de', required: false })`.
+**`erro não documentado: POST /eventos (400)`**
+Cada rota documenta o erro que ela lança de verdade: o POST devolve 400 com body inválido, o PATCH devolve 404 com id inexistente e o admin devolve 401 sem token. O `GET /eventos` não falha, então não precisa de erro.
 
 **`sucesso sem tipo`**
 `@ApiOkResponse()` sem `type` gera uma resposta sem corpo. Passe `{ type: Evento }`, ou `{ type: [Evento] }` para listas.

@@ -28,11 +28,9 @@ Trabalhe sempre na raiz. Os arquivos que você vai mexer são `src/main.ts`, os 
 
 | Rota | O que faz |
 |------|-----------|
-| `GET /eventos?de=2026-11-01` | Lista os eventos, com filtro opcional por data |
-| `GET /eventos/:id` | Busca um evento |
+| `GET /eventos` | Lista os eventos |
 | `POST /eventos` | Cria um evento |
 | `PATCH /eventos/:id` | Edita um evento |
-| `DELETE /eventos/:id` | Remove um evento |
 | `GET /admin/estatisticas` | Estatísticas, exige `Authorization: Bearer trilha-docs` |
 
 ## Sessões
@@ -43,7 +41,7 @@ Trabalhe sempre na raiz. Os arquivos que você vai mexer são `src/main.ts`, os 
 | 2 | Toda rota com tag, resumo, resposta de sucesso tipada, erro documentado e bearer na rota de admin |
 | 3 (checkpoint) | Nenhum schema vazio: CLI plugin ligado, DTOs com exemplo, `UpdateEventoDto` correto |
 | 4 (entrega) | Spectral sem avisos no CI, branch protegido e documentação fechada em produção |
-| 5 (opcional) | Mock do contrato com Prism, escolha de UI e versionamento |
+| 5 (opcional) | Mock do contrato com Prism, sem a API rodando |
 
 As sessões 1 a 4 já cobrem o necessário para documentar uma API de projeto da CJR. As sessões 1 e 4 servem para qualquer stack; as sessões 2 e 3 são específicas do NestJS.
 

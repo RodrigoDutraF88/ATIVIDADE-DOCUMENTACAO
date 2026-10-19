@@ -201,9 +201,10 @@ sessao5() {
   done
   if [ "$code" = "200" ]; then ok "o mock do Prism responde GET /eventos com 200, sem a API rodando"
   else falha "o mock do Prism não respondeu (GET /eventos = $code)"; dica "rode 'npx @stoplight/prism-cli mock openapi.json' e veja o erro"; fi
-  code="$(http_status "http://localhost:$porta_mock/eventos/qualquer-id")"
-  if [ "$code" = "200" ]; then ok "o mock devolve o exemplo do schema Evento"
-  else falha "GET /eventos/{id} no mock respondeu $code"; fi
+  code="$(curl -s -o /dev/null -m 5 -w '%{http_code}' -X POST "http://localhost:$porta_mock/eventos" -H 'Content-Type: application/json' -d '{}' 2>/dev/null)"
+  # O Prism devolve o erro documentado no POST (400); sem ele, gera um 422 próprio.
+  if [ "$code" = "400" ] || [ "$code" = "422" ]; then ok "o mock recusa um POST sem titulo e inicio ($code), só lendo o contrato"
+  else falha "o POST vazio no mock respondeu ${code:-000} (esperava 400)"; dica "confira o required do CreateEventoDto (Sessão 3)"; fi
   kill "$prism" 2>/dev/null; wait "$prism" 2>/dev/null
   fim "Você consumiu o contrato antes da API. Daqui pra frente é escolher o próximo passo."
 }

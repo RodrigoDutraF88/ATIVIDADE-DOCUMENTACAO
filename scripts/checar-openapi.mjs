@@ -26,22 +26,23 @@ function sessao1() {
   else falha(`o título "${titulo}" não tem o seu nome (${nome})`, `no DocumentBuilder: .setTitle('Agenda de ${nome || 'SEU NOME'}')`);
   if (doc.info?.version) ok(`versão da API preenchida (info.version = ${doc.info.version})`);
   else falha('info.version vazio', "no DocumentBuilder: .setVersion('1.0.0')");
-  if (operacoes.length >= 6) ok(`${operacoes.length} rotas aparecem no documento`);
-  else falha(`só ${operacoes.length} rotas no documento (esperava 6)`, 'confira se o SwaggerModule.setup roda antes do app.listen');
+  if (operacoes.length >= 4) ok(`${operacoes.length} rotas aparecem no documento`);
+  else falha(`só ${operacoes.length} rotas no documento (esperava 4)`, 'confira se o SwaggerModule.setup roda antes do app.listen');
 }
 
 function sessao2() {
   checar(operacoes.filter((o) => !o.op.tags?.length).map((o) => o.id), 'toda rota tem tag', 'rotas sem tag', "use @ApiTags('eventos') e @ApiTags('admin') nos controllers");
   checar(operacoes.filter((o) => !o.op.summary?.trim()).map((o) => o.id), 'toda rota tem resumo', 'rotas sem resumo', "use @ApiOperation({ summary: '...' }) em cada método");
   const sucessos = (o) => Object.keys(o.op.responses ?? {}).filter((c) => c.startsWith('2'));
-  checar(operacoes.filter((o) => sucessos(o).length === 0).map((o) => o.id), 'toda rota tem resposta de sucesso', 'rotas sem resposta 2xx', 'use @ApiOkResponse, @ApiCreatedResponse ou @ApiNoContentResponse');
+  checar(operacoes.filter((o) => sucessos(o).length === 0).map((o) => o.id), 'toda rota tem resposta de sucesso', 'rotas sem resposta 2xx', 'use @ApiOkResponse ou @ApiCreatedResponse');
   const semCorpo = operacoes.filter((o) => sucessos(o).some((c) => c !== '204' && !o.op.responses[c].content));
   checar(semCorpo.map((o) => o.id), 'respostas de sucesso dizem o tipo devolvido', 'sucesso sem tipo', 'passe o tipo: @ApiOkResponse({ type: Evento }) ou { type: [Evento] } para listas');
-  const erros = (o) => Object.keys(o.op.responses ?? {}).filter((c) => c.startsWith('4'));
-  checar(operacoes.filter((o) => erros(o).length === 0).map((o) => o.id), 'toda rota documenta pelo menos um erro 4xx', 'rotas sem erro documentado', 'use @ApiNotFoundResponse, @ApiBadRequestResponse ou @ApiUnauthorizedResponse com { type: ErroDto }');
-  const de = doc.paths?.['/eventos']?.get?.parameters?.find((p) => p.name === 'de');
-  if (de && de.required === false) ok('o filtro ?de= de GET /eventos é opcional');
-  else falha('o filtro ?de= de GET /eventos aparece como obrigatório', "use @ApiQuery({ name: 'de', required: false })");
+  // Cada rota documenta o erro que ela lança de verdade (veja o eventos.service.ts e o admin.guard.ts).
+  const ERROS_ESPERADOS = { 'POST /eventos': '400', 'PATCH /eventos/{id}': '404', 'GET /admin/estatisticas': '401' };
+  const faltando = Object.entries(ERROS_ESPERADOS)
+    .filter(([id, codigo]) => !operacoes.find((o) => o.id === id)?.op.responses?.[codigo])
+    .map(([id, codigo]) => `${id} (${codigo})`);
+  checar(faltando, 'cada rota documenta o erro que pode devolver', 'erro não documentado', 'POST: @ApiBadRequestResponse, PATCH: @ApiNotFoundResponse, admin: @ApiUnauthorizedResponse, todos com { type: ErroDto }');
   const bearer = Object.entries(doc.components?.securitySchemes ?? {}).find(([, s]) => s.type === 'http' && s.scheme === 'bearer');
   if (bearer) ok('esquema de segurança bearer declarado');
   else falha('nenhum esquema bearer no documento', 'no DocumentBuilder: .addBearerAuth()');

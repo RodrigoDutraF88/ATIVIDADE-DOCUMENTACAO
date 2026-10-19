@@ -2,7 +2,6 @@ export class Evento {
   id: string;
   titulo: string;
   inicio: string;
-  fim: string | null;
   local: string | null;
   criadoEm: string;
 

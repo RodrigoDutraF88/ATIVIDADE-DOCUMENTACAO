@@ -13,9 +13,9 @@ async function bootstrap() {
       .setTitle('Agenda de SEU NOME')
       .setDescription('API de eventos da Agenda, atividade da Trilha de Documentação de API da CJR.')
       .setVersion('1.0.0')
-      .setContact('Capacitação CJR', 'https://github.com/RodrigoDutraF88/TRILHA-DOCUMENTACAO', 'capacitacao@exemplo.com')
+      .setContact('Capacitação CJR', 'https://github.com/RodrigoDutraF88/ATIVIDADE-DOCUMENTACAO', 'capacitacao@exemplo.com')
       .addServer('http://localhost:3000', 'Local')
-      .addTag('eventos', 'Criar, listar, editar e remover eventos da agenda')
+      .addTag('eventos', 'Criar, listar e editar eventos da agenda')
       .addTag('admin', 'Rotas restritas, exigem o token bearer de admin')
       .addBearerAuth()
       .build();
